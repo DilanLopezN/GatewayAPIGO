@@ -48,7 +48,7 @@ func (s *AccountService) UpdateBalance(apiKey string, amount float64) (*entities
 
 	account.AddBalance(amount)
 
-	err = s.repository.UpdateBalance(account)
+	err = s.repository.UpdateBalance(account, amount)
 	if err != nil {
 		return nil, err
 	}

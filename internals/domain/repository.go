@@ -7,5 +7,5 @@ type AccountRepository interface {
 
 	FindById(id string) (*Account, error)
 
-	UpdateBalance(account *Account) error
+	UpdateBalance(account *Account, amount float64) error
 }

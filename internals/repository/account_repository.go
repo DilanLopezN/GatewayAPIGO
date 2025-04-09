@@ -60,7 +60,7 @@ func (r *AccountRepository) FindByAPIKey(apiKey string) (*domain.Account, error)
 }
 
 
-func (r *AccountRepository) FindByID(id string) (*domain.Account, error) {
+func (r *AccountRepository) FindById(id string) (*domain.Account, error) {
 
 	var account domain.Account
 	var cratedAt, updatedAt time.Time
@@ -116,21 +116,3 @@ func (r *AccountRepository) UpdateBalance(account *domain.Account, amount float6
 	return tx.Commit()
 }
 
-func (r *AccountRepository) Update(account *domain.Account) error {
-
-	stmt, err := r.db.Prepare(`UPDATE accounts SET name = $1, email = $2, api_key = $3, balance = $4, updated_at = $5 WHERE id = $6`)
-	if err != nil {
-		return err
-	}
-
-	defer stmt.Close()
-
-	_, err = stmt.Exec(account.NAME, account.Email, account.APIKey, account.Balance, time.Now(), account.ID)
-
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
