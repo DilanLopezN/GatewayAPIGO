@@ -40,3 +40,23 @@ func (h *AccountHandler) Create(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(account)
 
 }
+
+func (h *AccountHandler) Get(w http.ResponseWriter, r *http.Request) {
+	apiKey := r.Header.Get("X-API-Key")
+
+	if apiKey == "" {
+		http.Error(w, "API KEY is required", http.StatusUnauthorized)
+		return
+	}
+
+	account, err := h.accountService.FindByAPIKey(apiKey)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(account)
+}
