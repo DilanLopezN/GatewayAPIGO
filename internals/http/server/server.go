@@ -1,6 +1,7 @@
 package server
 
 import (
+	"gateway/internals/http/middlewares"
 	"gateway/internals/http/web"
 	"gateway/internals/services"
 	"net/http"
@@ -13,26 +14,45 @@ type Server struct {
 	router *chi.Mux
 	server *http.Server
 	accountService *services.AccountService
+	invoiceService *services.InvoiceService
 	port string
 }
 
-func NewServer(accountService *services.AccountService, port string) *Server {
+func NewServer(accountService *services.AccountService, 
+	invoiceService *services.InvoiceService,
+	port string) *Server {
 	return &Server{
 		router: chi.NewRouter(),
 		accountService: accountService,
+		invoiceService: invoiceService,
 		port: port,
 }}
 
 
 func (s *Server) ConfigureRoutes() {
 	accountHandler := web.NewAccountHandler(s.accountService)
+	invoiceHandler := web.NewInvoiceHandler(s.invoiceService)
+	authMiddleware := middlewares.NewAuthMiddleware(s.accountService)
 
-	s.router.Post("/accounts", accountHandler.Create)
-	s.router.Get("/accounts", accountHandler.Get)
+
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Server is running"))
 	})
+
+	s.router.Post("/accounts", accountHandler.Create)
+	s.router.Get("/accounts", accountHandler.Get)
+
+	s.router.Group(func(r chi.Router) {
+		r.Use(authMiddleware.Authenticate)
+		s.router.Post("/invoice", invoiceHandler.Create)
+		s.router.Get("/invoice", invoiceHandler.ListByAccount)
+		s.router.Get("/invoice/{id}", invoiceHandler.Get)
+	
+	} )
+
+
+
 }
 
 

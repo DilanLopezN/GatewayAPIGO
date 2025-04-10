@@ -47,9 +47,12 @@ connStr := fmt.Sprintf(
 	accountRepository := repository.NewAccountRepository(db)
 	accountService := services.NewAccountService(accountRepository)
 
+	invoiceRepository := repository.NewInvoiceRepository(db)
+	invoiceService := services.NewInvoiceService(invoiceRepository, *accountService)
+
 	port := getEnv("PORT", "8080")
 
-	srv := server.NewServer(accountService, port)
+	srv := server.NewServer(accountService,invoiceService, port)
 
 	srv.ConfigureRoutes()
 
