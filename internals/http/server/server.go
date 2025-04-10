@@ -29,6 +29,10 @@ func (s *Server) ConfigureRoutes() {
 
 	s.router.Post("/accounts", accountHandler.Create)
 	s.router.Get("/accounts", accountHandler.Get)
+	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Server is running"))
+	})
 }
 
 
