@@ -17,7 +17,7 @@ func NewInvoiceService(invoiceRepository domain.InvoiceRepository, accountServic
 	}
 }
 
-func (s *InvoiceService) Create(input *entities.CreateInvoiceInput) (*entities.InvoiceOutput, error) {
+func (s *InvoiceService) Create(input entities.CreateInvoiceInput) (*entities.InvoiceOutput, error) {
 	account, err := s.accountService.FindByAPIKey(input.APIKey)
 	if err != nil {
 		return nil, err
